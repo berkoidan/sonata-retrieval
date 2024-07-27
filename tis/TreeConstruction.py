@@ -1,10 +1,10 @@
 import logging
 import pprint
 from typing import Any, Callable, Self, Sequence
-from tonality.TIS import TIS
-from tonality.TonalityApproximation import TonalityApproximation, TonalityCost
-from tonality.Scale import Scale, TonalFunction, TonalFunctions
-from tonality.Surface import Chord
+from tis.TIS import TIS
+from tis.TonalityApproximation import TonalityApproximation, TonalityCost
+from tis.Scale import Scale, TonalFunction, TonalFunctions
+from tis.Surface import Chord
 import my_utils
 logger = logging.getLogger(__name__)
 

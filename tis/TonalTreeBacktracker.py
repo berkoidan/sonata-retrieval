@@ -2,11 +2,11 @@ import logging
 from typing import Iterable
 import my_utils
 import AlgorithmParameters
-from tonality.TonalityApproximation import TonalityApproximation, TonalityCost, approximate_tonality
-from tonality.NoteCluster import NoteCluster
-from tonality.Scale import Scale, TonalFunction
-from tonality.Surface import Chord
-from tonality.TreeConstruction import TonalityNode, TreeConstructor, get_tonal_functions, relative_key
+from tis.TonalityApproximation import TonalityApproximation, TonalityCost, approximate_tonality
+from tis.NoteCluster import NoteCluster
+from tis.Scale import Scale, TonalFunction
+from tis.Surface import Chord
+from tis.TreeConstruction import TonalityNode, TreeConstructor, get_tonal_functions, relative_key
 
 logger = logging.getLogger(__name__)
 

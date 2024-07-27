@@ -1,7 +1,7 @@
 import numpy as np
 from typing import Any, Self, cast
 
-from tonality.NoteCluster import ChromaVector, Note, NoteCluster
+from tis.NoteCluster import ChromaVector, Note, NoteCluster
 
 FFTChroma = np.ndarray[Any, np.dtype[np.complexfloating[Any, Any]]]
 

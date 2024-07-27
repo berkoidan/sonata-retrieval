@@ -1,5 +1,5 @@
 from typing import Self, final
-from tonality.NoteCluster import Note, NoteCluster, all_notes
+from tis.NoteCluster import Note, NoteCluster, all_notes
 
 @final
 class Chord(NoteCluster):

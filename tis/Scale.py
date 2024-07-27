@@ -1,7 +1,7 @@
 import logging
-from tonality.NoteCluster import Note, NoteCluster, all_notes
+from tis.NoteCluster import Note, NoteCluster, all_notes
 import AlgorithmParameters
-from tonality.Surface import Chord, ChordTypes
+from tis.Surface import Chord, ChordTypes
 
 logger = logging.getLogger(__name__)
 
