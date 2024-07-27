@@ -1,11 +1,11 @@
 from argparse import ArgumentParser, Namespace
+from enum import Enum
 import logging
 import shutil
 import sys, os
 
 from mido import MidiFile
 from midi_parser import MidiParser
-from tis.TreeConstruction import TonalityNode
 
 logger = logging.getLogger(__name__)
 
@@ -72,20 +72,17 @@ def main(args:Namespace) -> None:
         midipath = os.path.join(*file_parts)
         logger.info(os.path.abspath(midipath))
         eprint(os.path.abspath(midipath))
-        result = handle_file(output_dir, midipath)
-        results[result] = results.get(result, 0) + 1    
+        handle_file(output_dir, midipath)
     print("Finished parsing and rendering")
-    print(results)
-    print("Total:", sum(results.values()))
 
-class ReturnValues():
+class ReturnValues(Enum):
     SUCCESS = 'Success'
     PARSE_FAILURE = "Failed to parse Midi File"
     TOO_MANY_NODES = "Too Many Nodes"
     PRECHECK_FAILURE = "Precheck Failed"
     NO_TREE_FOUND = "No tree was found"
 
-def handle_file(output_dir:str, midipath:str) -> str:        
+def handle_file(output_dir:str, midipath:str) -> ReturnValues:        
         # Step 1: Parse the MIDI file
         try:
             parser = MidiParser(midipath)
@@ -104,6 +101,8 @@ def handle_file(output_dir:str, midipath:str) -> str:
         if(len(parser.clusters) > 350):
             logger.error(f"Number of chords exceeds the maximum amount")
             return ReturnValues.TOO_MANY_NODES
+        
+        return ReturnValues.SUCCESS
                             
 if __name__ == '__main__':
     parser = argsparser()
