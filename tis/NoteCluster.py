@@ -1,7 +1,9 @@
+import logging
 from typing import Iterator, Self
 
 ChromaVector = list[float]
 
+logger = logging.getLogger(__name__)
 
 class Note():
     NOTE_NAMES = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B']
@@ -28,7 +30,7 @@ class Note():
         return type(self)(self.note - other.note)
     
     def __repr__(self) -> str:
-        return Note.NOTE_NAMES[self.note]
+        return str(self)
     
     def __hash__(self) -> int:
         return self.note
@@ -60,9 +62,20 @@ class NoteCluster():
     def add_note(self, note:Note, length:int) -> None:
         self.notes[note] += length
     
+    def sub_note(self, note:Note, length:int) -> None:
+        self.notes[note] -= length
+    
     def add_notes(self, notes:list[Note], length:int) -> None:
         for note in notes:
             self.add_note(note, length)
+    
+    def add(self, other:Self) -> None:
+        for note in other.notes:
+            self.add_note(note, other.notes[note])
+    
+    def sub(self, other:Self) -> None:
+        for note in other.notes:
+            self.sub_note(note, other.notes[note])
     
     def set_begin_time(self, time:int) -> None:
         self.begin_time = time
@@ -105,6 +118,9 @@ class NoteCluster():
     def __contains__(self, note:Note) -> bool:
         return self.notes[note] > 0
     
+    def __repr__(self) -> str:
+        return str(self)
+    
     def chroma(self) -> ChromaVector:
         chroma_vector:ChromaVector = [0] * 12
         cluster_len = len(self)
@@ -113,3 +129,9 @@ class NoteCluster():
         for note in self.notes.keys():
             chroma_vector[note.note] += self.notes[note] / cluster_len
         return chroma_vector
+
+def sum_clusters(clusters:list[NoteCluster]) -> NoteCluster:
+    ret = NoteCluster()
+    for cluster in clusters:
+        ret.add(cluster)
+    return ret

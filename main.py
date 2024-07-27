@@ -4,6 +4,7 @@ import logging
 import shutil
 import sys, os
 
+import NoteCorrelation
 from mido import MidiFile
 from midi_parser import MidiParser
 
@@ -94,14 +95,10 @@ def handle_file(output_dir:str, midipath:str) -> ReturnValues:
                 
         # Step 3 : Sample Clusters
         parser.parse_to_clusters()
-        parser.clean_cluster_edges()
-        
-        # Step 4 : Tonality Approximation
-        logger.info(f"Number of chords: {len(parser.clusters)}")
-        if(len(parser.clusters) > 350):
-            logger.error(f"Number of chords exceeds the maximum amount")
-            return ReturnValues.TOO_MANY_NODES
-        
+
+        # for cluster in parser.clusters:
+        #     logger.info(str(cluster))
+        NoteCorrelation.correlation(parser.clusters[0], parser.clusters)
         return ReturnValues.SUCCESS
                             
 if __name__ == '__main__':

@@ -60,3 +60,12 @@ class TIS():
     def angular(c1 : NoteCluster, c2 : NoteCluster) -> np.floating[Any]:
         value = TISPoint.from_cluster(c1) @ TISPoint.from_cluster(c2)
         return value / np.pi
+    
+    @staticmethod
+    def radial(c1 : NoteCluster, c2 : NoteCluster) -> np.floating[Any]:
+        return abs(TIS.norm(c1) - TIS.norm(c2))
+    
+    @staticmethod
+    def norm(nc : NoteCluster) -> np.floating[Any]:
+        return abs(TISPoint.from_cluster(nc))
+        
