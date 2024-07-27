@@ -1,7 +1,6 @@
 from typing import Iterable
 import mido
-import tonality.NoteCluster as NC
-from tonality import SmoothTracks
+import tis.NoteCluster as NC
 
 TimeSignature = tuple[int,int]
 
@@ -22,10 +21,6 @@ class MidiParser():
     def _beat_start_time(self, time:int) -> int:
         return (time // self.ticks_per_beat) * self.ticks_per_beat
     
-    def smooth_tracks(self) -> None:
-        for i in range(1, len(self.midi.tracks)):
-            SmoothTracks.smooth(self.midi.tracks[0], self.midi.tracks[i], self.ticks_per_beat)                
- 
     def _get_track_duration(self, track:mido.MidiTrack) -> int:
         for time, msg in self._walk_track_abs(track):
             pass
