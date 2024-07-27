@@ -3,17 +3,17 @@ import logging
 from typing import Any, Self
 
 import numpy as np
-from tonality.Scale import Scale, TonalFunction
-from tonality.Surface import CHORD_VARIANTS, Chord
+from tis.Scale import Scale, TonalFunction
+from tis.Surface import CHORD_VARIANTS, Chord
 
 from typing import Iterable
 
 import numpy as np
 import AlgorithmParameters
-from tonality.NoteCluster import NoteCluster
-from tonality.Scale import ALL_SCALES, Scale
-from tonality.Surface import Chord
-from tonality.TIS import TIS
+from tis.NoteCluster import NoteCluster
+from tis.Scale import ALL_SCALES, Scale
+from tis.Surface import Chord
+from tis.TIS import TIS
 
 logger = logging.getLogger(__name__)
 

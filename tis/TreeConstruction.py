@@ -5,7 +5,7 @@ from tis.TIS import TIS
 from tis.TonalityApproximation import TonalityApproximation, TonalityCost
 from tis.Scale import Scale, TonalFunction, TonalFunctions
 from tis.Surface import Chord
-import my_utils
+import utils.iterator
 logger = logging.getLogger(__name__)
 
 class TonalRegions():
@@ -135,7 +135,7 @@ class TreeConstructor():
             return True
     
         for ruleset in RULES:
-            for i in my_utils.from_the_middle_out(0, len(self.nodes)):
+            for i in utils.iterator.from_the_middle_out(0, len(self.nodes)):
                 for rule, chord_choice in ruleset:
                     root_value = rule[0]
                     children_values = tuple(rule[1:])
