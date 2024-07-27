@@ -69,14 +69,6 @@ class NoteCluster():
         for note in notes:
             self.add_note(note, length)
     
-    def add(self, other:Self) -> None:
-        for note in other.notes:
-            self.add_note(note, other.notes[note])
-    
-    def sub(self, other:Self) -> None:
-        for note in other.notes:
-            self.sub_note(note, other.notes[note])
-    
     def set_begin_time(self, time:int) -> None:
         self.begin_time = time
     
@@ -89,12 +81,19 @@ class NoteCluster():
     def __getitem__(self, key: Note) -> float:
         return self.notes[key] / len(self)
     
-    def __add__(self, other:Self) -> Self:
+    def __add__(self, other:Self) -> Self:        
         ret = type(self)()
         ret.notes = dict(map(lambda note: (note, self.notes[note] + other.notes[note]), self.notes.keys()))
-        ret.set_begin_time(self.begin_time)
-        ret.set_end_time(other.end_time)
-        return ret        
+        ret.set_begin_time(other.begin_time if self.begin_time == other.end_time else self.begin_time)
+        ret.set_end_time(other.end_time if self.end_time == other.begin_time else self.end_time)        
+        return ret
+
+    def __sub__(self, other:Self) -> Self:
+        ret = type(self)()
+        ret.notes = dict(map(lambda note: (note, self.notes[note] - other.notes[note]), self.notes.keys()))
+        ret.set_begin_time(other.end_time if self.begin_time == other.begin_time else self.begin_time)
+        ret.set_end_time(other.begin_time if self.end_time == other.end_time else self.end_time)        
+        return ret
     
     def __str__(self) -> str:
         notes_str = '-'.join([f'{note}:{value}' for note, value in self.notes.items() if value > 0])
@@ -131,7 +130,7 @@ class NoteCluster():
         return chroma_vector
 
 def sum_clusters(clusters:list[NoteCluster]) -> NoteCluster:
-    ret = NoteCluster()
-    for cluster in clusters:
-        ret.add(cluster)
+    ret = clusters[0]
+    for cluster in clusters[1:]:
+        ret += cluster
     return ret

@@ -1,21 +1,25 @@
 import logging
+from typing import Any, Callable
+
+import numpy as np
 from tis.TIS import TIS
 from tis.NoteCluster import NoteCluster, sum_clusters
 
 logger = logging.getLogger(__name__)
 
-def correlation(right:NoteCluster, clusters:list[NoteCluster], windowSize:int=1) -> None:
-    left = sum_clusters(clusters[:windowSize])
-    for i in range(windowSize-1, len(clusters) + 1):
+def correlation(right:NoteCluster, 
+                clusters:list[NoteCluster], 
+                metric: Callable[[NoteCluster, NoteCluster], np.floating[Any]], 
+                windowSize:int=1) -> None:
+    left:NoteCluster = sum_clusters(clusters[:windowSize])
+    for i in range(windowSize, len(clusters) + 1):
+        if len(left) == 0:
+            continue
 
-        euclid = TIS.euclid(right, left)
-        angular = TIS.angular(right, left)
-        radial = TIS.radial(right, left)
-        logger.info(f"{right} ({TIS.norm(right)}) <-> {left} ({TIS.norm(left)}): {radial} {euclid}, {angular}")
+        logger.info(f"{right} ({round(TIS.norm(right))}) <-> {left} ({round(TIS.norm(left))}):\t{metric(right, left)}")
 
         if i >= len(clusters):
             continue
-
-        left.sub(clusters[i - windowSize])
-        left.add(clusters[i])
-    pass
+        
+        left += clusters[i]
+        left -= clusters[i - windowSize]

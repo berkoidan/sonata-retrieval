@@ -7,6 +7,7 @@ import sys, os
 import NoteCorrelation
 from mido import MidiFile
 from midi_parser import MidiParser
+from tis.TIS import TIS
 
 logger = logging.getLogger(__name__)
 
@@ -98,7 +99,9 @@ def handle_file(output_dir:str, midipath:str) -> ReturnValues:
 
         # for cluster in parser.clusters:
         #     logger.info(str(cluster))
-        NoteCorrelation.correlation(parser.clusters[0], parser.clusters)
+        NoteCorrelation.correlation(parser.clusters[0], parser.clusters, TIS.radial)
+        NoteCorrelation.correlation(parser.clusters[0], parser.clusters, TIS.angular)
+        NoteCorrelation.correlation(parser.clusters[0], parser.clusters, TIS.euclid)        
         return ReturnValues.SUCCESS
                             
 if __name__ == '__main__':
