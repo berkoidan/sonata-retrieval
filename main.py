@@ -7,6 +7,7 @@ import sys, os
 import NoteCorrelation
 from mido import MidiFile
 from midi_parser import MidiParser
+from tis.NoteCluster import NoteCluster, sum_clusters
 from tis.TIS import TIS
 
 logger = logging.getLogger(__name__)
@@ -69,7 +70,6 @@ def dump_midi(midi_file:MidiFile, directory:str) -> None:
 
 def main(args:Namespace) -> None:
     midi_files = get_midi_files(args)
-    results:dict[str,int] = {}
     for file_parts in midi_files:
         output_dir = setup_output(args.output, file_parts[1])
         
@@ -86,6 +86,14 @@ class ReturnValues(Enum):
     PRECHECK_FAILURE = "Precheck Failed"
     NO_TREE_FOUND = "No tree was found"
 
+def combine_clusters(clusters:list[NoteCluster], chunk_size:int) -> list[NoteCluster]:
+    ret:list[NoteCluster] = []
+    pos = 0
+    while pos < len(clusters):
+        ret.append(sum_clusters(clusters[pos:(pos+chunk_size)]))
+        pos += chunk_size
+    return ret
+
 def handle_file(output_dir:str, midipath:str, args:Namespace) -> ReturnValues:        
         # Step 1: Parse the MIDI file
         try:
@@ -99,11 +107,13 @@ def handle_file(output_dir:str, midipath:str, args:Namespace) -> ReturnValues:
         # Step 3 : Sample Clusters
         parser.parse_to_clusters()
 
+        clusters = combine_clusters(parser.clusters, args.combine_clusters)
+
         metric = TIS.radial
         # metric = TIS.angular
         # metric = TIS.euclid
 
-        data = NoteCorrelation.correlation(parser.clusters, metric, args.window_size)
+        data = NoteCorrelation.correlation(clusters, metric, args.window_size)
         NoteCorrelation.draw_hitmap(data)        
         return ReturnValues.SUCCESS
                             
