@@ -19,6 +19,8 @@ def argsparser() -> ArgumentParser:
         description='This program generates an hierarcal tonality tree out of a generic MIDI file')
     parser.add_argument('midi_file', nargs='+', help='List of midi files or directories')
     parser.add_argument('-r', '--recursive', action='store_true', help='Recursive search of MIDI files in directories')
+    parser.add_argument('-w', '--window_size', type=int, default=1, help='Window Size (default: 1)')
+    parser.add_argument('-c', '--combine_clusters', type=int, default=1, help='Combine Clusters (default: 1)')
     parser.add_argument('-o', dest='output', help='Output directory', default='output')
     return parser
 
@@ -74,7 +76,7 @@ def main(args:Namespace) -> None:
         midipath = os.path.join(*file_parts)
         logger.info(os.path.abspath(midipath))
         eprint(os.path.abspath(midipath))
-        handle_file(output_dir, midipath)
+        handle_file(output_dir, midipath, args)
     print("Finished parsing and rendering")
 
 class ReturnValues(Enum):
@@ -84,7 +86,7 @@ class ReturnValues(Enum):
     PRECHECK_FAILURE = "Precheck Failed"
     NO_TREE_FOUND = "No tree was found"
 
-def handle_file(output_dir:str, midipath:str) -> ReturnValues:        
+def handle_file(output_dir:str, midipath:str, args:Namespace) -> ReturnValues:        
         # Step 1: Parse the MIDI file
         try:
             parser = MidiParser(midipath)
@@ -97,11 +99,12 @@ def handle_file(output_dir:str, midipath:str) -> ReturnValues:
         # Step 3 : Sample Clusters
         parser.parse_to_clusters()
 
-        # for cluster in parser.clusters:
-        #     logger.info(str(cluster))
-        NoteCorrelation.correlation(parser.clusters[0], parser.clusters, TIS.radial)
-        NoteCorrelation.correlation(parser.clusters[0], parser.clusters, TIS.angular)
-        NoteCorrelation.correlation(parser.clusters[0], parser.clusters, TIS.euclid)        
+        metric = TIS.radial
+        # metric = TIS.angular
+        # metric = TIS.euclid
+
+        data = NoteCorrelation.correlation(parser.clusters, metric, args.window_size)
+        NoteCorrelation.draw_hitmap(data)        
         return ReturnValues.SUCCESS
                             
 if __name__ == '__main__':

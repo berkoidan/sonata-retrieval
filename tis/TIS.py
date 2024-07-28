@@ -4,6 +4,7 @@ from typing import Any, Self, cast
 from tis.NoteCluster import ChromaVector, Note, NoteCluster
 
 FFTChroma = np.ndarray[Any, np.dtype[np.complexfloating[Any, Any]]]
+Float = np.floating[Any]
 
 class TISPoint():
     @staticmethod
@@ -28,44 +29,44 @@ class TISPoint():
         new_val = np.subtract(self.complex, other.complex)
         return type(self)(new_val)
     
-    def __abs__(self) -> np.floating[Any]:
+    def __abs__(self) -> Float:
         return np.linalg.norm(self.complex)
     
-    def __mul__(self, other : Self) -> np.floating[Any]:        
-        return cast(np.floating[Any], np.real(np.sum(self.complex * np.conjugate(other.complex))))        
+    def __mul__(self, other : Self) -> Float:        
+        return cast(Float, np.real(np.sum(self.complex * np.conjugate(other.complex))))        
     
     def __str__(self) -> str:
         return str(self.complex)
     
-    def __matmul__(self, other: Self) -> np.floating[Any]:
+    def __matmul__(self, other: Self) -> Float:
         # real and clip are to avoid inaccuracies        
         assert abs(self) > 0
         assert abs(other) > 0
         cos = self * other / (abs(self) * abs(other))
-        return cast(np.floating[Any], np.arccos(np.clip(cos, -1, 1)))
+        return cast(Float, np.arccos(np.clip(cos, -1, 1)))
 
 class TIS():
     @staticmethod
-    def dissonance(chord : NoteCluster) -> np.floating[Any]:
+    def dissonance(chord : NoteCluster) -> Float:
         max_dissonance = abs(TISPoint.from_chroma([0] * Note.NOTE_LEN))
         distance = abs(TISPoint.from_cluster(chord))
         value = distance / max_dissonance
         return 1 - value
     
     @staticmethod
-    def euclid(c1 : NoteCluster, c2 : NoteCluster) -> np.floating[Any]:
+    def euclid(c1 : NoteCluster, c2 : NoteCluster) -> Float:
         return abs(TISPoint.from_cluster(c1) - TISPoint.from_cluster(c2))
     
     @staticmethod
-    def angular(c1 : NoteCluster, c2 : NoteCluster) -> np.floating[Any]:
+    def angular(c1 : NoteCluster, c2 : NoteCluster) -> Float:
         value = TISPoint.from_cluster(c1) @ TISPoint.from_cluster(c2)
         return value / np.pi
     
     @staticmethod
-    def radial(c1 : NoteCluster, c2 : NoteCluster) -> np.floating[Any]:
+    def radial(c1 : NoteCluster, c2 : NoteCluster) -> Float:
         return abs(TIS.norm(c1) - TIS.norm(c2))
     
     @staticmethod
-    def norm(nc : NoteCluster) -> np.floating[Any]:
+    def norm(nc : NoteCluster) -> Float:
         return abs(TISPoint.from_cluster(nc))
         
