@@ -20,15 +20,17 @@ def correlation(clusters:list[NoteCluster],
                 windowSize:int) -> np.ndarray[Any, np.dtype[Float]]:
     results = np.zeros((len(clusters), len(clusters)))
     clusters = list(cluster_windows(clusters, windowSize))
+    logger.info(f"CLUSTERS {clusters}")
     for start in range(len(clusters)):
         logger.debug(f'Start at {start}')
         for offset in range(len(clusters) - start):
             right = clusters[start + offset]
             left = clusters[offset]
-            if len(right) == 0 or len(left) == 0:
+            if len(right) == 0 or len(left) == 0:                
                 continue
             distance = metric(right, left)
-            logger.info(f"{right} ({round(TIS.norm(right))}) <-> {left} ({round(TIS.norm(left))}):\t{distance}")
+            logger.info(f'{start + offset} <-> {offset} = \t {distance}')
+            # logger.info(f"{right} ({round(TIS.norm(right))}) <-> {left} ({round(TIS.norm(left))}):\t{distance}")
             results[offset][start + offset] = distance
     return results
 
