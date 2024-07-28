@@ -7,10 +7,10 @@ from tis.NoteCluster import NoteCluster, sum_clusters
 
 logger = logging.getLogger(__name__)
 
-def cluster_windows(clusters:list[NoteCluster], windowSize:int) -> Iterator[tuple[int, NoteCluster]]:
+def cluster_windows(clusters:list[NoteCluster], windowSize:int) -> Iterator[NoteCluster]:
     window = sum_clusters(clusters[:windowSize])    
     for i in range(windowSize, len(clusters)):
-        yield i, window
+        yield window
         window += clusters[i]
         window -= clusters[i - windowSize]
 
@@ -19,13 +19,17 @@ def correlation(clusters:list[NoteCluster],
                 metric: Callable[[NoteCluster, NoteCluster], Float], 
                 windowSize:int) -> np.ndarray[Any, np.dtype[Float]]:
     results = np.zeros((len(clusters), len(clusters)))
-    for i, right in cluster_windows(clusters, windowSize):
-        for j, left in cluster_windows(clusters, windowSize):
+    clusters = list(cluster_windows(clusters, windowSize))
+    for start in range(len(clusters)):
+        logger.debug(f'DEBUG {start}')
+        for offset in range(len(clusters) - start):
+            right = clusters[start + offset]
+            left = clusters[offset]
             if len(right) == 0 or len(left) == 0:
                 continue
             distance = metric(right, left)
             logger.info(f"{right} ({round(TIS.norm(right))}) <-> {left} ({round(TIS.norm(left))}):\t{distance}")
-            results[i][j] = distance
+            results[offset][start + offset] = distance
     return results
 
 def draw_hitmap(data: np.ndarray[Any, np.dtype[Float]]) -> None:
